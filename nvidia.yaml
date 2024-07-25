@@ -30,8 +30,3 @@ test_data:
 
     # Run the tests
     ssh ubuntu@$DEVICE_IP "$(< $SCRIPTS/test.sh)"
-
-
-
-# Submit job:
-# testflinger submit --poll attach.yaml
