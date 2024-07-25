@@ -1,0 +1,37 @@
+job_queue: 202302-31212
+provision_data:
+  distro: noble
+reserve_data:
+  ssh_keys:
+    - lp:farshidtz
+    - lp:locnnil
+  timeout: 600
+test_data:
+  attachments:
+    - local: "nvidia-test"
+      agent: "scripts"
+  test_cmds: |
+    #!/usr/bin/env bash
+    set -ex
+
+    # List the attached files
+    find attachments/test
+
+    SCRIPTS=./attachments/test/scripts
+
+    # Setup the environment on the target device
+    ssh ubuntu@$DEVICE_IP "$(< $SCRIPTS/setup.sh)"
+
+    # Reboot it
+    ssh ubuntu@$DEVICE_IP "sudo reboot &"
+
+    echo "Wait for the device to boot and start its SSH server"
+    $SCRIPTS/wait_for_port.sh $DEVICE_IP 22
+
+    # Run the tests
+    ssh ubuntu@$DEVICE_IP "$(< $SCRIPTS/test.sh)"
+
+
+
+# Submit job:
+# testflinger submit --poll attach.yaml
